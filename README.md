@@ -7,7 +7,7 @@
 <p>If the user chooses a recipe, the program displays some information about that recipe</p>
 <p>The user can then see the ingredients and directions for that recipe which the program scrapes from the appropriate site</p>
 
-#### <TOD0>
+### <TOD0>
 - See if user wants to search for another recipe when first is done
 - Add ability to view the footnotes
 - Add ability to see comments for recipe
