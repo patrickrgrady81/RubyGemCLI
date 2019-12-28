@@ -13,4 +13,4 @@
 - Add ability to see comments for recipe
 - Validate input
 - User can see next pages of recipes
-- Program will say if no recipes are found
+- [X] Program will say if no recipes are found

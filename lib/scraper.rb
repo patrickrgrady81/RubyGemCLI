@@ -1,27 +1,37 @@
 require_relative 'recipe'
+require_relative 'menu'
 require 'open-uri'
 require 'nokogiri'
+require 'pry'
 
 class Scraper
     attr_accessor :food, :menu
 
-    def initialize(menu)
-        self.menu = menu 
+    def initialize
+        self.menu = Menu.new 
         
     end
 
     def start
         continue = true
         while continue do 
+            Recipe.clear_all
             self.food = self.menu.intro
             doc = self.get_page(1)
             self.scrape(doc, 1)
-        
+            
             choice = self.menu.display_recipes
-        
-            doc = self.get_full_recipe(choice - 1)
-            self.scrape(doc, 2)
-            continue = self.menu.go_again?
+            #binding.pry
+
+            if choice > 0
+                doc = self.get_full_recipe(choice - 1)
+                self.scrape(doc, 2)
+                continue = self.menu.go_again?
+            elsif choice == 0
+                continue = self.menu.none_found(self.food)
+            else
+                break
+            end
         end
         self.menu.say_bye
     end

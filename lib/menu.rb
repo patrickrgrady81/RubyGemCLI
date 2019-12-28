@@ -5,25 +5,30 @@ class Menu
     def intro
         puts ""
         puts "Hello, I am going to try to find some recipes for you"
-        print "What would you like recipes for? : "
+        print "   What would you like recipes for? : "
         food = gets.chomp
         food = food.gsub(" ", "_")
-        food
+        return food
     end
 
     def display_recipes
-        index = 1
-        puts ""
-        Recipe.all.each{|recipe|
-            puts "#{index}: #{recipe.title}"
-            index += 1
-        }
-        print "Which recipe would you like more information on? (Enter 1 - #{index-1}): "
-        self.show_details
+        if Recipe.all.count > 0
+            index = 1
+            puts ""
+            Recipe.all.each{|recipe|
+                puts "#{index}: #{recipe.title}"
+                index += 1
+            }
+            print "    Which recipe would you like more information on? (Enter 1 - #{index-1}): "
+            answer = gets.chomp
+            self.show_details(answer.to_i)
+        else
+            return 0
+        end
     end
 
-    def show_details
-        self.recipe_choice = gets.chomp.to_i
+    def show_details(choice)
+        self.recipe_choice = choice
         self.display_details(self.recipe_choice)
     end
 
@@ -41,7 +46,7 @@ class Menu
         puts "2) Go back"
         puts "3) Exit"
 
-        print "Please enter your choice (Enter 1-3): "
+        print "   Please enter your choice (Enter 1-3): "
         choice = gets.chomp.to_i
 
         case choice 
@@ -50,6 +55,7 @@ class Menu
         when 2
             display_recipes
         when 3
+            say_bye
             exit!
         end
     end
@@ -70,9 +76,15 @@ class Menu
         }
     end
 
+    def none_found(food)
+        puts ""
+        puts "Sorry, no recipes were found for '#{food}''"
+        go_again?
+    end
+
     def go_again?
         puts ""
-        print "Would you like to go again? (1: yes, 2: no)"
+        print "   Would you like to search again? (1: yes, 2: no): "
         answer = gets.chomp.to_i
         case answer
         when 1
