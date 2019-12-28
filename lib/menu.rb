@@ -3,6 +3,7 @@ class Menu
     attr_accessor :recipe_choice
 
     def intro
+        puts ""
         puts "Hello, I am going to try to find some recipes for you"
         print "What would you like recipes for? : "
         food = gets.chomp
@@ -18,6 +19,10 @@ class Menu
             index += 1
         }
         print "Which recipe would you like more information on? (Enter 1 - #{index-1}): "
+        self.show_details
+    end
+
+    def show_details
         self.recipe_choice = gets.chomp.to_i
         self.display_details(self.recipe_choice)
     end
@@ -43,9 +48,43 @@ class Menu
         when 1
             return self.recipe_choice
         when 2
-            self.dsiplay_recipes
+            display_recipes
         when 3
             exit!
         end
+    end
+
+    def display_ingredients(ingredient_list)
+        puts ""
+        puts "INGREDIENTS".bold.underline
+        ingredient_list.each{|ingredient|
+            puts ingredient
+        }
+    end
+
+    def display_directions(direction_list)
+        puts ""
+        puts "DIRECTIONS".bold.underline
+        direction_list.each_with_index{|d, i|
+            puts "#{i+1}) #{d}" if d!= ""
+        }
+    end
+
+    def go_again?
+        puts ""
+        print "Would you like to go again? (1: yes, 2: no)"
+        answer = gets.chomp.to_i
+        case answer
+        when 1
+            return true
+        when 2
+            return false
+        end
+    end
+
+    def say_bye    
+        puts ""
+        puts "Thank you for using my recipe finder."
+        puts "Come back any time you need a new recipe!"
     end
 end
