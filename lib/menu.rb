@@ -21,26 +21,20 @@ class Menu
             }
             print "    Which recipe would you like more information on? (Enter 1 - #{index-1}): "
             answer = gets.chomp
-            self.show_details(answer.to_i)
+            display_details(answer.to_i)
         else
             return 0
         end
     end
 
-    def show_details(choice)
-        self.recipe_choice = choice
-        self.display_details(self.recipe_choice)
-    end
-
     def display_details(choice)
+        self.recipe_choice = choice
         puts ""
-        puts Recipe.all[choice-1].title.bold.underline
-        puts Recipe.all[choice-1].description
-        puts Recipe.all[choice-1].rating
-        self.display_choices
-    end
+        recipe = choice - 1
+        puts Recipe.all[recipe].title.bold.underline
+        puts Recipe.all[recipe].description
+        puts Recipe.all[recipe].rating
 
-    def display_choices
         puts ""
         puts "1) See this recipe"
         puts "2) Go back"

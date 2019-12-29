@@ -18,14 +18,14 @@ class Scraper
             Recipe.clear_all
             self.food = self.menu.intro
             doc = self.get_page(1)
-            self.scrape(doc, 1)
+            scrape(doc, 1)
             
             choice = self.menu.display_recipes
             #binding.pry
 
             if choice > 0
-                doc = self.get_full_recipe(choice - 1)
-                self.scrape(doc, 2)
+                doc = get_full_recipe(choice - 1)
+                scrape(doc, 2)
                 continue = self.menu.go_again?
             elsif choice == 0
                 continue = self.menu.none_found(self.food)
@@ -76,8 +76,8 @@ class Scraper
     end
 
     def get_full_recipe(choice)
-        url = Recipe.all[choice].href
-        doc = Nokogiri::HTML(open(url).read)
+        recipe_url = Recipe.all[choice].href
+        doc = Nokogiri::HTML(open(recipe_url).read)
         return doc
     end
 end
