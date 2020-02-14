@@ -5,79 +5,58 @@ require 'nokogiri'
 require 'pry'
 
 class Scraper
-    attr_accessor :food, :menu
-
-    def initialize
-        self.menu = Menu.new 
-        
+    def get_recipe_list(food, page)
+        doc = get_page(food, page)
+        scrape_for_recipes(doc)
     end
 
-    def start
-        continue = true
-        while continue do 
-            Recipe.clear_all
-            self.food = self.menu.intro
-            doc = self.get_page(1)
-            scrape(doc, 1)
-            
-            choice = self.menu.display_recipes
-            #binding.pry
-
-            if choice > 0
-                doc = get_full_recipe(choice - 1)
-                scrape(doc, 2)
-                continue = self.menu.go_again?
-            elsif choice == 0
-                continue = self.menu.none_found(self.food)
-            else
-                break
-            end
-        end
-        self.menu.say_bye
-    end
-
-    def scrape(doc, level)
-        case level
-        when 1
-            recipes = doc.css("div.fixed-recipe-card__info")
-            recipes.each{|recipe|
-                title = recipe.css("span.fixed-recipe-card__title-link").text
-                href = recipe.css("h3.fixed-recipe-card__h3 a").attribute("href").value
-                rating = recipe.css("div.fixed-recipe-card__ratings span.stars").attribute("aria-label").text
-                description = recipe.css("div.fixed-recipe-card__description").text
-                Recipe.new(title, href, rating, description)
-            }
-
-        when 2
-            ingredient_list = []
-            index = 1
-            while doc.css("ul#lst_ingredients_" + index.to_s).count > 0 do
-                doc.css("ul#lst_ingredients_" + index.to_s + " li").each{|ing|
-                    ingredient_list << ing.inner_text.strip.to_s
-                }
-                index += 1
-            end
-            ingredient_list = ingredient_list[0...-1]
-            self.menu.display_ingredients(ingredient_list)
-
-
-            directions_list = []
-            directions = doc.css("ol.list-numbers.recipe-directions__list li").each{|direction|
-                 directions_list << direction.text.strip
-            }
-            self.menu.display_directions(directions_list)
-        end
-    end
-
-    def get_page(page)
+    def get_page(food, page)
         #https://www.allrecipes.com/search/results/?wt=apples&sort=re&page=1
-        doc = Nokogiri::HTML(open("https://www.allrecipes.com/search/results/?wt=#{self.food}&sort=re&page=#{page}").read)
-        return doc
+        Nokogiri::HTML(open("https://www.allrecipes.com/search/results/?wt=#{food}&sort=re&page=#{page}").read)
     end
 
-    def get_full_recipe(choice)
-        recipe_url = Recipe.all[choice].href
-        doc = Nokogiri::HTML(open(recipe_url).read)
-        return doc
+    def scrape_for_recipes(doc)
+        recipes = doc.css("div.fixed-recipe-card__info")
+        recipes.each{|recipe|
+            title = recipe.css("span.fixed-recipe-card__title-link").text
+            href = recipe.css("h3.fixed-recipe-card__h3 a").attribute("href").value
+            rating = recipe.css("div.fixed-recipe-card__ratings span.stars").attribute("aria-label").text
+            description = recipe.css("div.fixed-recipe-card__description").text
+            Recipe.new(title, href, rating, description)
+        }
+    end
+
+    def update_recipe(recipe)
+        get_ingredients(recipe)
+        get_directions(recipe)
+    end
+
+    def get_ingredients(recipe)
+        doc = Nokogiri::HTML(open(recipe.href).read)
+        scrape_for_ingredients(doc, recipe)
+    end 
+
+    def get_directions(recipe)
+        doc = Nokogiri::HTML(open(recipe.href).read)
+        scrape_for_directions(doc, recipe)
+    end
+
+    def scrape_for_ingredients(doc, recipe)
+        ingredients = []
+        index = 1
+        while doc.css("ul#lst_ingredients_" + index.to_s).count > 0 do
+            doc.css("ul#lst_ingredients_" + index.to_s + " li").each{|ing|
+                ingredients << ing.inner_text.strip.to_s
+            }
+            index += 1
+        end
+        recipe.ingredients = ingredients[0...-1]
+    end
+
+    def scrape_for_directions(doc, recipe)
+        directions = doc.css("ol.list-numbers.recipe-directions__list li").map{|direction|
+            direction.text.strip
+        }
+        recipe.directions = directions
     end
 end

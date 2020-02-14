@@ -1,2 +1,4 @@
-require_relative '../lib/app.rb'
-run
+require_relative '../lib/menu.rb'
+require_relative '../lib/scraper.rb'
+
+Menu.new.run

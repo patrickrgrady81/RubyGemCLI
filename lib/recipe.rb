@@ -1,5 +1,5 @@
 class Recipe
-    attr_accessor :title, :href, :rating, :description
+    attr_accessor :title, :href, :rating, :description, :ingredients, :directions
 
     @@all = []
 
@@ -14,6 +14,10 @@ class Recipe
 
     def self.all 
         @@all
+    end
+
+    def self.count
+        @@all.count
     end
 
     def self.clear_all
