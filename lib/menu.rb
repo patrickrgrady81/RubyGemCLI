@@ -1,18 +1,12 @@
 class Menu
 
+
     def run
-        scraper = Scraper.new
         Recipe.clear_all
         intro
         food = get_food
-        scraper.get_recipe_list(food, 1)
-        answer = display_recipe_list(food) -1
-        answer = display_details(answer, food)
-        recipe = Recipe.all[answer]
-        scraper.update_recipe(recipe) if !recipe.ingredients
-        display_ingredients(recipe.ingredients)
-        display_directions(recipe.directions)
-        go_again?
+        Scraper.get_recipe_list(food, 1)
+        display_recipe_list 
     end
 
     def intro 
@@ -27,30 +21,30 @@ class Menu
         food = food.gsub(" ", "_")
     end
 
-    def display_recipe_list(food)
+    def display_recipe_list
         if Recipe.count > 0
             puts ""
             Recipe.all.each.with_index(1){|recipe, index|
                 puts "#{index}: #{recipe.title}"
             }
-            get_info
+            which_recipe_info?
         else
-            none_found(food)
+            none_found
         end
     end
 
-    def get_info
+    def which_recipe_info?
         print "    Which recipe would you like more information on? (Enter 1 - #{Recipe.count}): "
         inp = gets.chomp.to_i
         if inp.between?(1, Recipe.count)
-            return inp 
+            display_details(inp) 
         else
             puts "Sorry, invalid input, please try again... "
-            get_info
+            which_recipe_info?
         end
     end
 
-    def display_details(recipe_choice, food)
+    def display_details(recipe_choice)
         puts ""
         puts Recipe.all[recipe_choice].title
         puts Recipe.all[recipe_choice].description
@@ -60,25 +54,33 @@ class Menu
         puts "1) See this recipe"
         puts "2) Go back"
         puts "3) Exit"
-        get_detail_choice(recipe_choice, food)
+        get_detail_choice(recipe_choice)
     end
 
-    def get_detail_choice(recipe_choice, food)
+    def get_detail_choice(recipe_choice)
         print "   Please enter your choice (Enter 1-3): "
         answer = gets.chomp.to_i
         if answer.between?(1,3)
         case answer 
             when 1
-                return recipe_choice
+                ingredients_and_directions(answer)
             when 2
-                display_recipe_list(food)
+                display_recipe_list
             when 3
                 quit
             end
         else 
             puts "Sorry, invalid input, please try again... "
-            get_detail_choice(recipe_choice, food)
+            get_detail_choice(recipe_choice)
         end
+    end
+
+    def ingredients_and_directions(answer)
+        recipe = Recipe.all[answer]
+        Scraper.update_recipe(recipe) if !recipe.ingredients
+        display_ingredients(recipe.ingredients)
+        display_directions(recipe.directions)
+        go_again?
     end
 
     def display_ingredients(ingredients)
@@ -97,9 +99,9 @@ class Menu
         }
     end
 
-    def none_found(food)
+    def none_found
         puts ""
-        puts "Sorry, no recipes were found for '#{food}''"
+        puts "Sorry, no recipes were found..."
         go_again?
     end
 
@@ -115,6 +117,7 @@ class Menu
                 quit
             end
         else
+            puts "Sorry, invalid input, please try again... "
             go_again?
         end 
     end

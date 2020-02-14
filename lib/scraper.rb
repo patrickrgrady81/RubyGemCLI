@@ -5,17 +5,17 @@ require 'nokogiri'
 require 'pry'
 
 class Scraper
-    def get_recipe_list(food, page)
+    def self.get_recipe_list(food, page)
         doc = get_page(food, page)
         scrape_for_recipes(doc)
     end
 
-    def get_page(food, page)
+    def self.get_page(food, page)
         #https://www.allrecipes.com/search/results/?wt=apples&sort=re&page=1
         Nokogiri::HTML(open("https://www.allrecipes.com/search/results/?wt=#{food}&sort=re&page=#{page}").read)
     end
 
-    def scrape_for_recipes(doc)
+    def self.scrape_for_recipes(doc)
         recipes = doc.css("div.fixed-recipe-card__info")
         recipes.each{|recipe|
             title = recipe.css("span.fixed-recipe-card__title-link").text
@@ -26,22 +26,22 @@ class Scraper
         }
     end
 
-    def update_recipe(recipe)
+    def self.update_recipe(recipe)
         get_ingredients(recipe)
         get_directions(recipe)
     end
 
-    def get_ingredients(recipe)
+    def self.get_ingredients(recipe)
         doc = Nokogiri::HTML(open(recipe.href).read)
         scrape_for_ingredients(doc, recipe)
     end 
 
-    def get_directions(recipe)
+    def self.get_directions(recipe)
         doc = Nokogiri::HTML(open(recipe.href).read)
         scrape_for_directions(doc, recipe)
     end
 
-    def scrape_for_ingredients(doc, recipe)
+    def self.scrape_for_ingredients(doc, recipe)
         ingredients = []
         index = 1
         while doc.css("ul#lst_ingredients_" + index.to_s).count > 0 do
@@ -53,7 +53,7 @@ class Scraper
         recipe.ingredients = ingredients[0...-1]
     end
 
-    def scrape_for_directions(doc, recipe)
+    def self.scrape_for_directions(doc, recipe)
         directions = doc.css("ol.list-numbers.recipe-directions__list li").map{|direction|
             direction.text.strip
         }
