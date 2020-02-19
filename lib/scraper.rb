@@ -1,9 +1,3 @@
-require_relative 'recipe'
-require_relative 'menu'
-require 'open-uri'
-require 'nokogiri'
-require 'pry'
-
 class Scraper
     def self.get_recipe_list(food, page)
         doc = get_page(food, page)
@@ -27,19 +21,19 @@ class Scraper
     end
 
     def self.update_recipe(recipe)
-        get_ingredients(recipe)
-        get_directions(recipe)
-    end
-
-    def self.get_ingredients(recipe)
         doc = Nokogiri::HTML(open(recipe.href).read)
         scrape_for_ingredients(doc, recipe)
-    end 
-
-    def self.get_directions(recipe)
-        doc = Nokogiri::HTML(open(recipe.href).read)
         scrape_for_directions(doc, recipe)
     end
+
+    # def self.get_ingredients(recipe)
+
+    # end 
+
+    # def self.get_directions(recipe)
+    #     doc = Nokogiri::HTML(open(recipe.href).read)
+
+    # end
 
     def self.scrape_for_ingredients(doc, recipe)
         ingredients = []

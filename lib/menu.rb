@@ -63,7 +63,7 @@ class Menu
         if answer.between?(1,3)
         case answer 
             when 1
-                ingredients_and_directions(answer)
+                ingredients_and_directions(recipe_choice)
             when 2
                 display_recipe_list
             when 3
@@ -75,8 +75,8 @@ class Menu
         end
     end
 
-    def ingredients_and_directions(answer)
-        recipe = Recipe.all[answer]
+    def ingredients_and_directions(recipe_choice)
+        recipe = Recipe.all[recipe_choice]
         Scraper.update_recipe(recipe) if !recipe.ingredients
         clear_screen
         display_ingredients(recipe.ingredients)
@@ -134,12 +134,12 @@ class Menu
      
 
     def say_bye    
-        puts ""
         puts "Thank you for using my recipe finder."
         puts "Come back any time you need a new recipe!"
     end
 
     def quit
+        clear_screen
         say_bye
         exit!
     end
