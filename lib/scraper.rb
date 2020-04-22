@@ -26,15 +26,6 @@ class Scraper
         scrape_for_directions(doc, recipe)
     end
 
-    # def self.get_ingredients(recipe)
-
-    # end 
-
-    # def self.get_directions(recipe)
-    #     doc = Nokogiri::HTML(open(recipe.href).read)
-
-    # end
-
     def self.scrape_for_ingredients(doc, recipe)
         ingredients = []
         index = 1
