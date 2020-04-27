@@ -5,4 +5,3 @@ require_relative './recipe.rb'
 
 require 'open-uri'
 require 'nokogiri'
-require 'pry'
