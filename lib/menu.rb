@@ -1,6 +1,4 @@
 class Menu
-
-
     def run
         Recipe.clear_all
         intro
