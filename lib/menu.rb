@@ -3,7 +3,7 @@ class Menu
         Recipe.clear_all
         intro
         food = get_food
-        Scraper.get_recipe_list(food, 1)
+        Scraper.get_recipe_list(food)
         display_recipe_list 
     end
 
